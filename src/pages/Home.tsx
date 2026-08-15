@@ -109,9 +109,11 @@ function Home() {
                 {error && <p style={{color: "red"}}>{error}</p>}
                 {!loading && !error && (
                     <div className="item-list flex flex-wrap gap-4">
-                        {items.map((item) => (
-                            <ItemTile key={item.id} item={item} fetchCartItems={fetchCartItems}/>
-                        ))}
+                        {items.length === 0
+                            ? <p className="text-gray-600">No items available yet.</p>
+                            : items.map((item) => (
+                                <ItemTile key={item.id} item={item} fetchCartItems={fetchCartItems}/>
+                            ))}
                     </div>
                 )}
             </div>

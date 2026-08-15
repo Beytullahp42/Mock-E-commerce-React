@@ -50,9 +50,11 @@ function OrderListPage() {
                 {error && <p style={{color: "red"}}>{error}</p>}
                 {!loading && !error && (
                     <div className="order-list flex flex-col items-center gap-4">
-                        {orders.map((order) => (
-                            <OrderTile key={order.id} order={order}/>
-                        ))}
+                        {orders.length === 0
+                            ? <p className="text-gray-600">No orders yet.</p>
+                            : orders.map((order) => (
+                                <OrderTile key={order.id} order={order}/>
+                            ))}
                     </div>
                 )}
             </div>

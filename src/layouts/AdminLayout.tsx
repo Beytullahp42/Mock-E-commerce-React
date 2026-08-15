@@ -9,6 +9,7 @@ function AdminLayout() {
                     <li><Link to="/admin">Item List</Link></li>
                     <li><Link to="/admin/create">Create Item</Link></li>
                     <li><Link to="/admin/orders">Orders</Link></li>
+                    <li className="text-base font-medium"><Link to="/">Customer View</Link></li>
                 </ul>
             </nav>
             <div className="mb-16"></div>

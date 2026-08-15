@@ -35,9 +35,11 @@ function Admin() {
             {error && <p style={{color: "red"}}>{error}</p>}
             {!loading && !error && (
                 <div className="item-list flex flex-wrap gap-4">
-                    {items.map((item) => (
-                        <AdminItemTile key={item.id} item={item}/>
-                    ))}
+                    {items.length === 0
+                        ? <p className="text-gray-600">No items yet. Create the first item to get started.</p>
+                        : items.map((item) => (
+                            <AdminItemTile key={item.id} item={item}/>
+                        ))}
                 </div>
             )}
         </div>
