@@ -1,47 +1,76 @@
-# E-Commerce Frontend (React)
+# Mock E-Commerce Frontend
 
-This is the frontend application for a mock e-commerce app developed as the final project for **SE-016 - Web Applications** course at Estonian Entrepreneurship University of Applied Sciences during the **2024–2025 spring semester**.
+React frontend for my mock e-commerce portfolio project.
 
-Features include:
+I originally wrote this application as the final project for the **SE-016 Web Applications** course at the Estonian Entrepreneurship University of Applied Sciences during my Erasmus exchange in the **2024-2025 spring semester**. The preserved, polished school submission is available on the [`course-final-2025`](https://github.com/Beytullahp42/Mock-E-commerce-React/tree/course-final-2025) branch. The `master` branch contains the post-course portfolio improvements while keeping the project's simple handwritten Tailwind identity.
 
-- Add items to cart, remove items, and clear cart
-- Place orders and check order status
-- Admin functions: create/update items, check and update orders
-- Image upload with Filepond
-- Simple styling with Tailwind CSS
+## Live demo
 
----
+- Customer application: https://mock-ecommerce.beytullahp.com
+- Admin panel: https://mock-ecommerce.beytullahp.com/admin
+- API: https://mec-api.beytullahp.com
 
-## 🛠️ Technologies Used
+The public demo is reset every day. Accounts, orders, products, and admin changes may disappear.
 
-- React (Vite + TypeScript)
+Demo administrator:
+
+- Email: `admin@admin.com`
+- Password: `password123`
+
+The login page also exposes these credentials through its small `?` help button.
+
+## Features
+
+- Public responsive product catalog
+- Email registration and login with one-hour JWTs stored intentionally in `localStorage`
+- Authenticated per-account cart, checkout, and order history
+- Role-protected product and order administration
+- Product image upload with FilePond
+- Hard product deletion with a confirmation explaining that completed orders remain unchanged
+- Historical order-item snapshots that retain their checkout-time name, description, price, quantity, and image
+- Mobile, tablet, and desktop layouts using the original solid amber, blue, green, and red styling
+
+The checkout card form is demonstration-only. Card values never leave the browser and are not stored or processed.
+
+## Run locally with Docker Compose
+
+The sibling `Mock-E-commerce-SpringBoot` repository contains the Compose file for the entire application. It builds this repository and the backend from their current local source code.
+
+```bash
+cd ../Mock-E-commerce-SpringBoot
+cp .env.example .env
+docker compose up -d --build
+```
+
+The frontend is then available at http://localhost:3000. The default API URL is http://localhost:8080.
+
+`VITE_BASE_URL` is a Docker build argument, so set it before building when the API is hosted elsewhere. The backend's `CORS_ALLOWED_ORIGINS` value must contain the exact frontend origin.
+
+## Local Node development
+
+```bash
+npm install
+npm run dev
+```
+
+Verification commands:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Technologies
+
+- React 19, Vite, and TypeScript
 - Tailwind CSS
-- [Filepond](https://pqina.nl/filepond/) (image upload)
+- Axios
+- FilePond
+- React Router
 
----
+Backend repository: https://github.com/Beytullahp42/Mock-E-commerce-SpringBoot
 
-## ⚠️ Limitations
-
-- No authentication system (no login/signup)
-- No payment API integration
-- UI is minimal and could use design polish
-
----
-
-Backend API repository: https://github.com/Beytullahp42/Mock-E-commerce-SpringBoot
-
----
-
-Preview of the app: https://e-commerce-react-phi-eight.vercel.app/
-
-Admin page: https://e-commerce-react-phi-eight.vercel.app/admin
-
-Note: Since the Spring Boot backend of this app is hosted on a Render free plan, it goes to sleep after periods of inactivity. As a result, the initial boot-up can take up to 50 seconds to 1 minute.
-Additionally, since I don’t have persistent disk storage allocated, uploaded images may be deleted on each redeployment.
-
----
-
-## 📸 Screenshots
+## Screenshots from the original course version
 
 <img src="Screenshots/Screenshot_25-5-2025_185930_localhost.jpeg" width="600"/>
 <img src="Screenshots/Screenshot_25-5-2025_19048_localhost.jpeg" width="600"/>

@@ -9,6 +9,9 @@ import ShowOrderPage from "./pages/ShowOrderPage.tsx";
 import Admin from "./pages/Admin.tsx";
 import CreateItem from "./pages/CreateItem.tsx";
 import EditItem from "./pages/EditItem.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 function App() {
     return (
@@ -18,12 +21,19 @@ function App() {
                 <Routes>
                     <Route element={<UserLayout />}>
                         <Route path="/" element={<Home />} />
-                        <Route path="/orders" element={<OrderListPage />} />
-                        <Route path="/orders/:id" element={<ShowOrderPage />} />
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/register" element={<Register/>}/>
+                        <Route path="/orders" element={
+                            <ProtectedRoute><OrderListPage/></ProtectedRoute>
+                        }/>
+                        <Route path="/orders/:id" element={
+                            <ProtectedRoute><ShowOrderPage/></ProtectedRoute>
+                        }/>
                     </Route>
 
-                    {/* Admin layout */}
-                    <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="/admin" element={
+                        <ProtectedRoute role="ROLE_ADMIN"><AdminLayout/></ProtectedRoute>
+                    }>
                         <Route index element={<Admin />} />
                         <Route path="create" element={<CreateItem />} />
                         <Route path="edit/:id" element={<EditItem />} />

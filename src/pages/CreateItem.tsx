@@ -6,12 +6,20 @@ import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import type { FilePondFile } from "filepond";
 import { BASE_URL } from "../services/BASE_URL.ts";
+import {AUTH_TOKEN_KEY} from "../services/api.ts";
 import {useNavigate} from "react-router";
 
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+registerPlugin(
+    FilePondPluginImageExifOrientation,
+    FilePondPluginImagePreview,
+    FilePondPluginFileValidateSize,
+    FilePondPluginFileValidateType
+);
 
 function CreateItem() {
     const navigate = useNavigate();
@@ -20,7 +28,7 @@ function CreateItem() {
     const [imageUrl, setImageUrl] = useState("");
     const [price, setPrice] = useState(0);
     const [, setFiles] = useState<FilePondFile[]>([]);
-    const url = BASE_URL + "/api/upload";
+    const url = BASE_URL + "/api/admin/uploads";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,7 +52,7 @@ function CreateItem() {
     };
 
     return (
-        <div className="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow-md">
+        <div className="w-full max-w-xl mx-auto my-4 sm:my-10 bg-white p-4 sm:p-6 rounded-xl shadow-md">
             <h1 className="text-2xl font-semibold mb-6 text-center">Create New Item</h1>
 
             <div className="mb-6">
@@ -52,25 +60,22 @@ function CreateItem() {
                     onupdatefiles={setFiles}
                     allowMultiple={false}
                     maxFiles={1}
+                    maxFileSize="10MB"
                     name="file"
-                    acceptedFileTypes={["image/*"]}
+                    acceptedFileTypes={["image/jpeg", "image/png", "image/webp"]}
                     labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
                     server={{
                         url: url,
                         process: {
                             url: "",
                             method: "POST",
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN_KEY) ?? ""}`,
+                            },
                             onload: (response) => {
                                 const res = JSON.parse(response);
                                 setImageUrl(res.imageUrl);
-                                return res.filename;
-                            },
-                        },
-                        revert: {
-                            url: `/${imageUrl}`,
-                            method: "DELETE",
-                            onload: (response) => {
-                                return response;
+                                return res.imageUrl;
                             },
                         },
                     }}

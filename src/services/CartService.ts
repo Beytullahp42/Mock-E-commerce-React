@@ -1,11 +1,10 @@
-import axios from "axios";
 import CartItem from "../models/CartItem.ts";
-import {BASE_URL} from "./BASE_URL.ts";
+import api from "./api.ts";
 
-const CART_URL = BASE_URL + "/api/cart";
+const CART_URL = "/api/cart";
 
 export async function addToCart(itemId: number, quantity: number): Promise<boolean> {
-    const res = await axios.post(CART_URL, {
+    const res = await api.post(CART_URL, {
         itemId,
         quantity
     });
@@ -13,7 +12,7 @@ export async function addToCart(itemId: number, quantity: number): Promise<boole
 }
 
 export async function getCartItems(): Promise<CartItem[]> {
-    const res = await axios.get(CART_URL);
+    const res = await api.get(CART_URL);
     return res.data.cartItems.map((cartItem: CartItem) => new CartItem(
         cartItem.id,
         cartItem.item,
@@ -22,11 +21,11 @@ export async function getCartItems(): Promise<CartItem[]> {
 }
 
 export async function removeFromCart(itemId: number): Promise<boolean> {
-    const res = await axios.delete(CART_URL + "/" + itemId);
+    const res = await api.delete(CART_URL + "/" + itemId);
     return res.status === 200;
 }
 
 export async function clearCart(): Promise<boolean> {
-    const res = await axios.delete(CART_URL);
+    const res = await api.delete(CART_URL);
     return res.status === 200 || res.status === 204;
 }

@@ -1,18 +1,27 @@
 import { Link, Outlet } from "react-router-dom";
+import {useAuth} from "../context/auth-context.ts";
 
 function UserLayout() {
+    const {account, logout} = useAuth();
+
     return (
         <>
-            <nav className="bg-amber-400 p-4 text-3xl select-none text-white font-bold fixed top-0 w-full h-16 z-10 grid items-center">
-                <ul className="flex items-center">
-                    <li><Link to="/">E-commerce</Link></li>
-                    <li className="ml-auto text-base font-medium"><Link to="/admin">Admin Panel</Link></li>
-                    <li className="ml-6 text-xl"><Link to="/orders">My Orders</Link></li>
+            <nav className="bg-amber-400 px-4 py-3 select-none text-white font-bold sticky top-0 w-full z-10">
+                <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <li className="text-2xl sm:text-3xl mr-auto"><Link to="/">E-commerce</Link></li>
+                    {!account && <li className="text-base"><Link to="/admin">Admin Panel</Link></li>}
+                    {account?.role === "ROLE_ADMIN" && <li className="text-base"><Link to="/admin">Admin Panel</Link></li>}
+                    {account?.role === "ROLE_USER" && <li className="text-base sm:text-xl"><Link to="/orders">My Orders</Link></li>}
+                    {!account && <li className="text-base"><Link to="/login">Login</Link></li>}
+                    {!account && <li className="text-base"><Link to="/register">Register</Link></li>}
+                    {account && (
+                        <li>
+                            <button className="text-base underline" onClick={logout}>Logout</button>
+                        </li>
+                    )}
                 </ul>
             </nav>
-            <div className="mb-16"></div>
             <div className="p-3">
-                {/*Outlet renders the child route's element*/}
                 <Outlet />
             </div>
         </>

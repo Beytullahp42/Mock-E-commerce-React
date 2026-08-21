@@ -1,9 +1,10 @@
 import {useParams} from "react-router";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import type Order from "../models/Order.ts";
 import {getOrderById, updateOrderStatus} from "../services/OrderService.ts";
-import type CartItem from "../models/CartItem.ts";
+import type OrderItem from "../models/OrderItem.ts";
 import {toast} from "react-toastify";
+import {useLocation} from "react-router-dom";
 
 function ShowOrderPage() {
     const {id} = useParams();
@@ -11,15 +12,15 @@ function ShowOrderPage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string>("PENDING");
-
+    const location = useLocation();
     const isAdmin = location.pathname.startsWith("/admin");
 
-    const fetchOrder = async () => {
+    const fetchOrder = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const fetchedOrder = await getOrderById(Number(id));
+            const fetchedOrder = await getOrderById(Number(id), isAdmin);
             setOrder(fetchedOrder);
             if (fetchedOrder) {
                 setSelectedStatus(fetchedOrder.orderStatus);
@@ -33,12 +34,12 @@ function ShowOrderPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, isAdmin]);
 
 
     useEffect(() => {
         fetchOrder();
-    }, []);
+    }, [fetchOrder]);
 
     const handleStatusChange = async () => {
         await toast.promise(
@@ -62,20 +63,21 @@ function ShowOrderPage() {
 
             {!loading && !error && order && (
                 <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div><strong>Order ID:</strong> {order.id}</div>
                         <div><strong>Status:</strong> {order.orderStatus}</div>
                         <div><strong>Name:</strong> {order.name}</div>
                         <div><strong>Surname:</strong> {order.surname}</div>
                         <div><strong>Email:</strong> {order.email}</div>
                         <div><strong>Phone:</strong> {order.phoneNumber}</div>
-                        <div className="col-span-2"><strong>Address:</strong> {order.address}</div>
-                        <div className="col-span-2"><strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}</div>
+                        <div className="sm:col-span-2"><strong>Address:</strong> {order.address}</div>
+                        <div className="sm:col-span-2"><strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}</div>
                     </div>
 
                     <div>
                         <h2 className="text-xl font-medium mb-2">Purchased Items</h2>
-                        <table className="w-full border border-gray-300 text-sm">
+                        <div className="overflow-x-auto">
+                        <table className="w-full min-w-[640px] border border-gray-300 text-sm">
                             <thead className="bg-gray-100">
                             <tr>
                                 <th className="border border-gray-300 p-2 text-left">Image</th>
@@ -86,26 +88,27 @@ function ShowOrderPage() {
                             </tr>
                             </thead>
                             <tbody>
-                            {order.cart.cartItems.map((cartItem: CartItem, index: number) => (
+                            {order.orderItems.map((orderItem: OrderItem, index: number) => (
                                 <tr
-                                    key={cartItem.id}
+                                    key={orderItem.id}
                                     className={`border-t border-gray-300 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                                 >
                                     <td className="border border-gray-300 p-2">
                                         <img
-                                            src={cartItem.item.imageUrl}
-                                            alt={cartItem.item.name}
+                                            src={orderItem.imageUrl}
+                                            alt={orderItem.name}
                                             className="w-16 h-16 object-cover"
                                         />
                                     </td>
-                                    <td className="border border-gray-300 p-2">{cartItem.item.name}</td>
-                                    <td className="border border-gray-300 p-2">{cartItem.item.description}</td>
-                                    <td className="border border-gray-300 p-2">{cartItem.quantity}</td>
-                                    <td className="border border-gray-300 p-2">${cartItem.item.price.toFixed(2)}</td>
+                                    <td className="border border-gray-300 p-2">{orderItem.name}</td>
+                                    <td className="border border-gray-300 p-2">{orderItem.description}</td>
+                                    <td className="border border-gray-300 p-2">{orderItem.quantity}</td>
+                                    <td className="border border-gray-300 p-2">${orderItem.unitPrice.toFixed(2)}</td>
                                 </tr>
                             ))}
                             </tbody>
                         </table>
+                        </div>
 
                     </div>
                     {isAdmin && (

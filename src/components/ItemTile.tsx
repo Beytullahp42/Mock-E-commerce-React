@@ -2,6 +2,8 @@ import Item from "../models/Item";
 import {useState} from "react";
 import {toast} from "react-toastify";
 import {addToCart} from "../services/CartService.ts";
+import {useAuth} from "../context/auth-context.ts";
+import {useNavigate} from "react-router-dom";
 
 interface ItemTileProps {
     item: Item,
@@ -10,11 +12,17 @@ interface ItemTileProps {
 
 function ItemTile({item, fetchCartItems}: ItemTileProps) {
     const [quantity, setQuantity] = useState<number>(1);
+    const {account} = useAuth();
+    const navigate = useNavigate();
 
     const handlePlus = () => setQuantity((prev) => prev + 1);
     const handleMinus = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
     const handleAddToCart = async () => {
+        if (!account) {
+            navigate("/login", {state: {from: "/"}});
+            return;
+        }
         await toast.promise(addToCart(item.id, quantity), {
             pending: "Adding to cart...",
             success: "Added to cart!",
@@ -25,20 +33,20 @@ function ItemTile({item, fetchCartItems}: ItemTileProps) {
 
     return (
         <div
-            className="item-tile w-96 h-[400px] border-2 border-gray-300 rounded-xl p-4 shadow-md flex flex-col bg-white"
+            className="item-tile w-full max-w-xs min-h-[360px] border-2 border-gray-300 rounded-xl p-3 shadow-md flex flex-col bg-white"
         >
             <img
-                className="w-64 h-64 object-cover border rounded self-center"
+                className="w-full max-w-56 aspect-square object-cover border rounded self-center"
                 src={item.imageUrl}
                 alt={item.name}
             />
-            <div className="flex flex-row justify-between items-center mt-4">
-                <div className="w-2/3 pr-2">
+            <div className="flex flex-col justify-between gap-3 mt-3">
+                <div className="min-w-0">
                     <h2 className="text-xl font-semibold truncate">{item.name}</h2>
                     <p className="text-gray-600 line-clamp-2 text-sm">{item.description}</p>
                     <p className="text-lg font-bold text-green-700 mt-1">Price: ${item.price}</p>
                 </div>
-                <div className="w-1/3 pl-2 flex flex-col justify-between">
+                <div className="flex flex-col justify-between">
                     <div className="flex bg-amber-100 items-center justify-between gap-2 mb-2">
                         <button
                             onClick={handleMinus}

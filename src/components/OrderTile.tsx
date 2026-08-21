@@ -1,12 +1,12 @@
 import type Order from "../models/Order.ts";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 interface OrderTileProps {
     order: Order
 }
 
 function OrderTile({order}: OrderTileProps) {
-
+    const location = useLocation();
     const isAdmin = location.pathname.startsWith("/admin");
 
     return (
@@ -15,7 +15,7 @@ function OrderTile({order}: OrderTileProps) {
                 {order.name} {order.surname}
             </div>
             <div className="text-sm text-gray-700"> {order.email}</div>
-            <div className="text-sm text-gray-700"> {order.totalPrice.toFixed(2)} €</div>
+            <div className="text-sm text-gray-700"> ${order.totalPrice.toFixed(2)}</div>
             <div className="text-sm text-gray-700"> Status: <span className="font-medium">{order.orderStatus}</span></div>
 
             <Link

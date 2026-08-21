@@ -10,7 +10,7 @@ COPY . .
 ARG VITE_BASE_URL=http://localhost:8080
 ENV VITE_BASE_URL=${VITE_BASE_URL}
 
-RUN npm run build
+RUN npm run lint && npm run build
 
 FROM nginx:alpine
 

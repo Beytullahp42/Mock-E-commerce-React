@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {createOrder} from "../services/OrderService.ts";
 import {toast} from "react-toastify";
+import {useAuth} from "../context/auth-context.ts";
 
 interface CheckoutModalProps {
     isOpen: boolean;
@@ -11,7 +12,6 @@ interface CheckoutModalProps {
 function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
-    const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
 
@@ -19,13 +19,13 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
     const [cardNumber, setCardNumber] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
     const [cvv, setCvv] = useState('');
+    const {account} = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const orderDto = {
             name,
             surname,
-            email,
             phoneNumber,
             address
         };
@@ -45,7 +45,6 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
     const resetForm = () => {
         setName('');
         setSurname('');
-        setEmail('');
         setPhoneNumber('');
         setAddress('');
 
@@ -67,7 +66,7 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
             ></div>
 
             <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
-                <div className="bg-white rounded-xl p-6 shadow-xl w-full max-w-md pointer-events-auto">
+                <div className="bg-white rounded-xl p-4 sm:p-6 shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto pointer-events-auto mx-3">
                     <h2 className="text-2xl font-bold mb-4">Checkout</h2>
                     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                         <input
@@ -84,13 +83,7 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
                             onChange={e => setSurname(e.target.value)}
                             required
                         />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                        />
+                        <input type="email" value={account?.email ?? ""} readOnly aria-label="Account email"/>
                         <input
                             type="tel"
                             placeholder="Phone Number"
@@ -108,6 +101,9 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
                         <hr className="my-2"/>
 
                         <h3 className="text-lg font-semibold">Payment Information</h3>
+                        <p className="text-sm bg-amber-100 border border-amber-400 rounded p-2">
+                            Demo only: use fake card details. These values never leave your browser and are not stored or processed.
+                        </p>
 
                         <input
                             type="text"
@@ -124,7 +120,7 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
                             required
                             inputMode="numeric"
                         />
-                        <div className="flex space-x-4 mb-4">
+                        <div className="flex flex-col sm:flex-row gap-4 mb-4">
                             <input
                                 type="tel"
                                 placeholder="MM/YY"
@@ -132,7 +128,7 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
                                 onChange={e => setExpirationDate(e.target.value)}
                                 required
                                 maxLength={5}
-                                className="w-1/2"
+                                className="w-full sm:w-1/2"
                             />
                             <input
                                 type="tel"
@@ -142,7 +138,7 @@ function CheckoutModal({isOpen, closeModal, refreshCart}: CheckoutModalProps) {
                                 required
                                 inputMode="numeric"
                                 maxLength={3}
-                                className="w-1/2"
+                                className="w-full sm:w-1/2"
                             />
                         </div>
 

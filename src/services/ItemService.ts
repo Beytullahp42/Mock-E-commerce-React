@@ -1,14 +1,25 @@
 import Item from "../models/Item";
 import type {ItemDto} from "../dto/ItemDto";
-import axios from "axios";
-import {BASE_URL} from "./BASE_URL.ts";
+import api from "./api.ts";
 
-const ITEMS_URL = BASE_URL + "/api/admin/items";
+const PUBLIC_ITEMS_URL = "/api/items";
+const ADMIN_ITEMS_URL = "/api/admin/items";
 
 
 
 export async function getAllItems(): Promise<Item[]> {
-    const res = await axios.get(ITEMS_URL);
+    const res = await api.get(PUBLIC_ITEMS_URL);
+    return res.data.map((item: Item) => new Item(
+        item.id,
+        item.name,
+        item.description,
+        item.imageUrl,
+        item.price
+    ));
+}
+
+export async function getAllAdminItems(): Promise<Item[]> {
+    const res = await api.get(ADMIN_ITEMS_URL);
     return res.data.map((item: Item) => new Item(
         item.id,
         item.name,
@@ -19,12 +30,12 @@ export async function getAllItems(): Promise<Item[]> {
 }
 
 export async function createItem(itemDto: ItemDto): Promise<boolean> {
-    const res = await axios.post(ITEMS_URL, itemDto);
+    const res = await api.post(ADMIN_ITEMS_URL, itemDto);
     return res.status === 201 || res.status === 200;
 }
 export async function getItemById(id: number): Promise<Item | null> {
     try {
-        const res = await axios.get(`${ITEMS_URL}/${id}`);
+        const res = await api.get(`${ADMIN_ITEMS_URL}/${id}`);
         const item = res.data;
         return new Item(
             item.id,
@@ -39,7 +50,11 @@ export async function getItemById(id: number): Promise<Item | null> {
 }
 
 export async function updateItem(id: number, itemDto: ItemDto): Promise<boolean> {
-    const res = await axios.put(`${ITEMS_URL}/${id}`, itemDto);
+    const res = await api.put(`${ADMIN_ITEMS_URL}/${id}`, itemDto);
     return res.status === 200;
 }
 
+export async function deleteItem(id: number): Promise<boolean> {
+    const res = await api.delete(`${ADMIN_ITEMS_URL}/${id}`);
+    return res.status === 204;
+}
